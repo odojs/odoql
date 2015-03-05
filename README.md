@@ -1,2 +1,2 @@
-# odoql
+# OdoQL
 Odo query language

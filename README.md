@@ -1,0 +1,2 @@
+# odoql
+Odo query language

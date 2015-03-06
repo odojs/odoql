@@ -1,0 +1,26 @@
+{
+  "name": "odoql",
+  "version": "1.0.0",
+  "description": "Odo query language",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/odojs/odoql.git"
+  },
+  "keywords": [
+    "graph",
+    "query"
+  ],
+  "author": "Thomas Coats",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/odojs/odoql/issues"
+  },
+  "homepage": "https://github.com/odojs/odoql",
+  "dependencies": {
+    "extend": "^2.0.0"
+  }
+}

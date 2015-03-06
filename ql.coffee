@@ -31,6 +31,7 @@ merge = (base, extra) ->
       return base
   for key, value of extra
     continue if key is '__odoql'
+    # todo: merge arrays
     if base[key]? and typeof value is 'object'
       merge base[key], value
       continue
@@ -52,7 +53,7 @@ module.exports =
   merge: (queries) ->
     # todo - merge queries properly
     result = {}
-    merge result, query for query in queries
+    merge result, extend {}, query for query in queries
     result
   exec: (queries, stores) ->
     state = {}

@@ -1,6 +1,6 @@
 {
   "name": "odoql",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Odo query language",
   "main": "index.js",
   "scripts": {

@@ -105,7 +105,7 @@ module.exports = {
     result = {};
     for (_i = 0, _len = queries.length; _i < _len; _i++) {
       query = queries[_i];
-      merge(result, query);
+      merge(result, extend({}, query));
     }
     return result;
   },

@@ -13,7 +13,7 @@ filltarget = function(graph, item) {
 };
 
 fillgraph = function(graph, item) {
-  var key, result, shape, target;
+  var def, key, result, shape, target;
   if ((item == null) || item === null) {
     return null;
   }
@@ -24,28 +24,32 @@ fillgraph = function(graph, item) {
       continue;
     }
     target = item[key];
-    if (shape.__odoql != null) {
-      result[key] = subqueries[shape.__odoql.query](shape.__odoql, shape, target);
+    if (shape.__odoql == null) {
+      result[key] = filltarget(shape, target);
       continue;
     }
-    if (target instanceof Array) {
+    def = shape.__odoql;
+    if (def.query != null) {
+      result[key] = subqueries[def.query.name](def, shape, target);
+      continue;
+    }
+    if (def.type === 'array') {
       result[key] = target.map(function(t) {
         return filltarget(shape, t);
       });
-    } else {
-      result[key] = filltarget(shape, target);
+      continue;
     }
   }
   return result;
 };
 
-filterstore = function(query, graph, data) {
+filterstore = function(def, graph, data) {
   var results;
-  results = jsonfilter(data, query.params.filter);
+  results = jsonfilter(data, def.query.filter);
   results = results.map(function(result) {
     return fillgraph(graph, result);
   });
-  if (query.type === 'array') {
+  if (def.type === 'array') {
     return results;
   }
   if (results.length === 0) {

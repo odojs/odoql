@@ -11,21 +11,24 @@ fillgraph = (graph, item) ->
   for key, shape of graph
     continue if !item[key]?
     target = item[key]
-    if shape.__odoql?
-      result[key] = subqueries[shape.__odoql.query] shape.__odoql, shape, target
+    if !shape.__odoql?
+      result[key] = filltarget shape, target
       continue
-    if target instanceof Array
+    def = shape.__odoql
+    if def.query?
+      result[key] = subqueries[def.query.name] def, shape, target
+      continue
+    if def.type is 'array'
       result[key] = target.map (t) ->
         filltarget shape, t
-    else
-      result[key] = filltarget shape, target
+      continue
   result
 
-filterstore = (query, graph, data) ->
-  results = jsonfilter data, query.params.filter
+filterstore = (def, graph, data) ->
+  results = jsonfilter data, def.query.filter
   results = results.map (result) ->
     fillgraph graph, result
-  return results if query.type is 'array'
+  return results if def.type is 'array'
   return null if results.length is 0
   if results.length isnt 1
     throw new Error 'One needed, many found'

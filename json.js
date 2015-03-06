@@ -69,7 +69,4 @@ executequery = function(data, graph, subqueries) {
   return results[0];
 };
 
-module.exports = {
-  query: executequery,
-  filter: jsonfilter
-};
+module.exports = executequery;

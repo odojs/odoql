@@ -42,6 +42,4 @@ executequery = (data, graph, subqueries) ->
     throw new Error 'One needed, many found'
   return results[0]
 
-module.exports =
-  query: executequery
-  filter: jsonfilter
+module.exports = executequery

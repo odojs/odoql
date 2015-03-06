@@ -45,7 +45,22 @@ eq = function(a, b) {
 };
 
 merge = function(base, extra) {
-  var key, value, _results;
+  var aarray, barray, key, value, _results;
+  aarray = base instanceof Array;
+  barray = extra instanceof Array;
+  if (aarray) {
+    if (!barray) {
+      console.log('Not an array, ignoring');
+      console.log(extra);
+      return base;
+    }
+    if (base.length !== 1 || extra.length !== 1) {
+      console.log('Expecting length 1 arrays');
+      console.log(extra);
+      return base;
+    }
+    return merge(base[0], extra[0]);
+  }
   if (base.__odoql != null) {
     if (extra.__odoql == null) {
       console.log('Non query, ignoring');
@@ -76,29 +91,23 @@ merge = function(base, extra) {
 module.exports = {
   object: function(graph, query) {
     var result;
-    result = extend({}, graph, {
-      __odoql: {
-        type: 'object'
-      }
-    });
+    result = extend({}, graph);
     if (query == null) {
       return result;
     }
-    result.__odoql.query = query;
+    result.__odoql = query;
     return result;
   },
-  array: function(graph, query, params) {
+  array: function(graph, query) {
     var result;
-    result = extend({}, graph, {
-      __odoql: {
-        type: 'array'
-      }
-    });
+    result = extend({}, graph);
     if (query == null) {
-      return result;
+      return [result];
     }
-    result.__odoql.query = query;
-    return result;
+    if (query != null) {
+      result.__odoql = query;
+    }
+    return [result];
   },
   merge: function(queries) {
     var query, result, _i, _len;
@@ -110,13 +119,13 @@ module.exports = {
     return result;
   },
   exec: function(queries, stores) {
-    var def, graph, key, state, store;
+    var graph, key, name, state, store;
     state = {};
     for (key in queries) {
       graph = queries[key];
-      def = graph.__odoql;
-      store = stores[def.query.name];
-      state[key] = store(def, graph);
+      name = graph instanceof Array ? graph[0].__odoql.name : graph.__odoql.name;
+      store = stores[name];
+      state[key] = store(graph);
     }
     return state;
   }

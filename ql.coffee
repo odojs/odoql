@@ -41,9 +41,10 @@ merge = (base, extra) ->
       console.log 'Query does not match, ignoring'
       console.log extra
       return base
+  else if extra.__odoql?
+    base.__odoql = extra.__odoql
   for key, value of extra
     continue if key is '__odoql'
-    # todo: merge arrays
     if base[key]? and typeof value is 'object'
       merge base[key], value
       continue
@@ -62,7 +63,12 @@ module.exports =
       result.__odoql = query
     [result]
   merge: (queries) ->
-    # todo - merge queries properly
+    return null if arguments.length is 0
+    if arguments.length isnt 1
+      queries = Array::slice.call arguments, 0
+    return null if queries.length is 0
+    if queries[0] instanceof Array
+      queries = queries.map (q) -> q[0]
     result = {}
     merge result, extend {}, query for query in queries
     result
@@ -75,5 +81,5 @@ module.exports =
         else
           graph.__odoql.name
       store = stores[name]
-      state[key] = store graph
+      state[key] = store.query graph, store.subqueries
     state

@@ -72,6 +72,8 @@ merge = function(base, extra) {
       console.log(extra);
       return base;
     }
+  } else if (extra.__odoql != null) {
+    base.__odoql = extra.__odoql;
   }
   _results = [];
   for (key in extra) {
@@ -111,6 +113,20 @@ module.exports = {
   },
   merge: function(queries) {
     var query, result, _i, _len;
+    if (arguments.length === 0) {
+      return null;
+    }
+    if (arguments.length !== 1) {
+      queries = Array.prototype.slice.call(arguments, 0);
+    }
+    if (queries.length === 0) {
+      return null;
+    }
+    if (queries[0] instanceof Array) {
+      queries = queries.map(function(q) {
+        return q[0];
+      });
+    }
     result = {};
     for (_i = 0, _len = queries.length; _i < _len; _i++) {
       query = queries[_i];
@@ -125,7 +141,7 @@ module.exports = {
       graph = queries[key];
       name = graph instanceof Array ? graph[0].__odoql.name : graph.__odoql.name;
       store = stores[name];
-      state[key] = store(graph);
+      state[key] = store.query(graph, store.subqueries);
     }
     return state;
   }

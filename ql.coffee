@@ -51,17 +51,11 @@ merge = (base, extra) ->
     base[key] = value
 
 module.exports =
-  object: (graph, query) ->
+  query: (graph, query) ->
     result = extend {}, graph
     return result if !query?
     result.__odoql = query
     result
-  array: (graph, query) ->
-    result = extend {}, graph
-    return [result] if !query?
-    if query?
-      result.__odoql = query
-    [result]
   merge: (queries) ->
     return null if arguments.length is 0
     if arguments.length isnt 1

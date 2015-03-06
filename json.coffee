@@ -3,7 +3,7 @@ jsonfilter = require './json-filter'
 fillprop = (data, graph, subqueries) ->
   if graph instanceof Array
     unless data instanceof Array
-      throw new Error 'Expecting array', data: data
+      throw new Error 'Expecting an array', data: data
     if graph[0].__odoql?
       def = graph[0].__odoql
       subqueries[def.name] data, graph, subqueries

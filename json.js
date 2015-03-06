@@ -7,7 +7,7 @@ fillprop = function(data, graph, subqueries) {
   var def;
   if (graph instanceof Array) {
     if (!(data instanceof Array)) {
-      throw new Error('Expecting array', {
+      throw new Error('Expecting an array', {
         data: data
       });
     }

@@ -91,7 +91,7 @@ merge = function(base, extra) {
 };
 
 module.exports = {
-  object: function(graph, query) {
+  query: function(graph, query) {
     var result;
     result = extend({}, graph);
     if (query == null) {
@@ -99,17 +99,6 @@ module.exports = {
     }
     result.__odoql = query;
     return result;
-  },
-  array: function(graph, query) {
-    var result;
-    result = extend({}, graph);
-    if (query == null) {
-      return [result];
-    }
-    if (query != null) {
-      result.__odoql = query;
-    }
-    return [result];
   },
   merge: function(queries) {
     var query, result, _i, _len;

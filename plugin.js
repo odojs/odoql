@@ -3,7 +3,28 @@ module.exports = function(component, spec) {
   if (spec.query == null) {
     return;
   }
-  return component.query = function(params) {
+  component.query = function(params) {
     return spec.query.call(component, params);
+  };
+  return component.relay = function(el, store, params) {
+    var query, scene, state;
+    query = component.query(params);
+    state = store(query);
+    scene = component.mount(el, state, params);
+    return {
+      update: function(params) {
+        query = component.query(params);
+        state = store(query);
+        return scene.update(state, params);
+      },
+      apply: function(params) {
+        query = component.query(params);
+        state = store(query);
+        return scene.apply(state, params);
+      },
+      unmount: function() {
+        return scene.unmount();
+      }
+    };
   };
 };

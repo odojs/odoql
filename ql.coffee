@@ -52,28 +52,20 @@ merge = (base, extra) ->
 
 module.exports =
   query: (graph, query) ->
-    result = extend {}, graph
-    return result if !query?
-    result.__odoql = query
-    result
+    __odoql: query
+    graph: graph
   merge: (queries) ->
     return null if arguments.length is 0
     if arguments.length isnt 1
       queries = Array::slice.call arguments, 0
     return null if queries.length is 0
-    if queries[0] instanceof Array
-      queries = queries.map (q) -> q[0]
     result = {}
     merge result, extend {}, query for query in queries
     result
   exec: (queries, stores) ->
     state = {}
     for key, graph of queries
-      name =
-        if graph instanceof Array
-          graph[0].__odoql.name
-        else
-          graph.__odoql.name
+      name = graph.__odoql.name
       store = stores[name]
       state[key] = store.query graph, store.subqueries
     state

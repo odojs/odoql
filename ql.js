@@ -92,13 +92,10 @@ merge = function(base, extra) {
 
 module.exports = {
   query: function(graph, query) {
-    var result;
-    result = extend({}, graph);
-    if (query == null) {
-      return result;
-    }
-    result.__odoql = query;
-    return result;
+    return {
+      __odoql: query,
+      graph: graph
+    };
   },
   merge: function(queries) {
     var query, result, _i, _len;
@@ -110,11 +107,6 @@ module.exports = {
     }
     if (queries.length === 0) {
       return null;
-    }
-    if (queries[0] instanceof Array) {
-      queries = queries.map(function(q) {
-        return q[0];
-      });
     }
     result = {};
     for (_i = 0, _len = queries.length; _i < _len; _i++) {
@@ -128,7 +120,7 @@ module.exports = {
     state = {};
     for (key in queries) {
       graph = queries[key];
-      name = graph instanceof Array ? graph[0].__odoql.name : graph.__odoql.name;
+      name = graph.__odoql.name;
       store = stores[name];
       state[key] = store.query(graph, store.subqueries);
     }

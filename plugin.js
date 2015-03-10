@@ -9,6 +9,7 @@ module.exports = function(component, spec) {
   return component.relay = function(el, store, params) {
     var query, scene, state;
     query = component.query(params);
+    console.log(query);
     state = store(query);
     scene = component.mount(el, state, params);
     return {

@@ -31,20 +31,25 @@ merge = (base, extra) ->
       console.log 'Expecting length 1 arrays'
       console.log extra
       return base
-    return merge base[0], extra[0]
-  if base.__odoql?
-    if !extra.__odoql?
+    return [merge base[0], extra[0]]
+  if base.__query?
+    if !extra.__query?
       console.log 'Non query, ignoring'
       console.log extra
       return base
-    unless eq base.__odoql, extra.__odoql
+    unless eq base.__params, extra.__params
       console.log 'Query does not match, ignoring'
       console.log extra
       return base
-  else if extra.__odoql?
-    base.__odoql = extra.__odoql
+    if !base.__graph? or !extra.__graph?
+      return base
+    merge base.__graph, extra.__graph
+    return
+  else if extra.__query?
+    console.log 'Query, ignoring'
+    console.log extra
+    return base
   for key, value of extra
-    continue if key is '__odoql'
     if base[key]? and typeof value is 'object'
       merge base[key], value
       continue
@@ -52,8 +57,9 @@ merge = (base, extra) ->
 
 module.exports =
   query: (graph, query) ->
-    __odoql: query
-    graph: graph
+    __query: query.name
+    __params: query
+    __graph: graph
   merge: (queries) ->
     return null if arguments.length is 0
     if arguments.length isnt 1
@@ -65,7 +71,6 @@ module.exports =
   exec: (queries, stores) ->
     state = {}
     for key, graph of queries
-      name = graph.__odoql.name
-      store = stores[name]
+      store = stores[graph.__query]
       state[key] = store.query graph, store.subqueries
     state

@@ -59,28 +59,32 @@ merge = function(base, extra) {
       console.log(extra);
       return base;
     }
-    return merge(base[0], extra[0]);
+    return [merge(base[0], extra[0])];
   }
-  if (base.__odoql != null) {
-    if (extra.__odoql == null) {
+  if (base.__query != null) {
+    if (extra.__query == null) {
       console.log('Non query, ignoring');
       console.log(extra);
       return base;
     }
-    if (!eq(base.__odoql, extra.__odoql)) {
+    if (!eq(base.__params, extra.__params)) {
       console.log('Query does not match, ignoring');
       console.log(extra);
       return base;
     }
-  } else if (extra.__odoql != null) {
-    base.__odoql = extra.__odoql;
+    if ((base.__graph == null) || (extra.__graph == null)) {
+      return base;
+    }
+    merge(base.__graph, extra.__graph);
+    return;
+  } else if (extra.__query != null) {
+    console.log('Query, ignoring');
+    console.log(extra);
+    return base;
   }
   _results = [];
   for (key in extra) {
     value = extra[key];
-    if (key === '__odoql') {
-      continue;
-    }
     if ((base[key] != null) && typeof value === 'object') {
       merge(base[key], value);
       continue;
@@ -93,8 +97,9 @@ merge = function(base, extra) {
 module.exports = {
   query: function(graph, query) {
     return {
-      __odoql: query,
-      graph: graph
+      __query: query.name,
+      __params: query,
+      __graph: graph
     };
   },
   merge: function(queries) {
@@ -116,12 +121,11 @@ module.exports = {
     return result;
   },
   exec: function(queries, stores) {
-    var graph, key, name, state, store;
+    var graph, key, state, store;
     state = {};
     for (key in queries) {
       graph = queries[key];
-      name = graph.__odoql.name;
-      store = stores[name];
+      store = stores[graph.__query];
       state[key] = store.query(graph, store.subqueries);
     }
     return state;

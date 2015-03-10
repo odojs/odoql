@@ -4,8 +4,8 @@ var executequery, fillproperties, fillproperty, jsonfilter;
 jsonfilter = require('./json-filter');
 
 fillproperty = function(data, graph, subqueries) {
-  if (graph.__odoql != null) {
-    return subqueries[graph.__odoql.name](data, graph, subqueries);
+  if (graph.__params != null) {
+    return subqueries[graph.__query](data, graph, subqueries);
   } else {
     return fillproperties(data, graph, subqueries);
   }
@@ -42,16 +42,16 @@ fillproperties = function(data, graph, subqueries) {
 
 executequery = function(data, graph, subqueries) {
   var results;
-  if (graph.graph instanceof Array) {
-    results = jsonfilter(data, graph.__odoql.filter);
+  if (graph.__graph instanceof Array) {
+    results = jsonfilter(data, graph.__params.filter);
     results = results.map(function(result) {
-      return fillproperties(result, graph.graph[0], subqueries);
+      return fillproperties(result, graph.__graph[0], subqueries);
     });
     return results;
   }
-  results = jsonfilter(data, graph.__odoql.filter);
+  results = jsonfilter(data, graph.__params.filter);
   results = results.map(function(result) {
-    return fillproperties(result, graph.graph, subqueries);
+    return fillproperties(result, graph.__graph, subqueries);
   });
   if (results.length === 0) {
     return null;

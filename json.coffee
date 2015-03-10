@@ -1,8 +1,8 @@
 jsonfilter = require './json-filter'
 
 fillproperty = (data, graph, subqueries) ->
-  if graph.__odoql?
-    subqueries[graph.__odoql.name] data, graph, subqueries
+  if graph.__params?
+    subqueries[graph.__query] data, graph, subqueries
   else
     fillproperties data, graph, subqueries
 
@@ -23,15 +23,15 @@ fillproperties = (data, graph, subqueries) ->
 
 executequery = (data, graph, subqueries) ->
   # if it's an array we return an array
-  if graph.graph instanceof Array
-    results = jsonfilter data, graph.__odoql.filter
+  if graph.__graph instanceof Array
+    results = jsonfilter data, graph.__params.filter
     results = results.map (result) ->
-      fillproperties result, graph.graph[0], subqueries
+      fillproperties result, graph.__graph[0], subqueries
     return results
   # otherwise filter, fill and return one or none
-  results = jsonfilter data, graph.__odoql.filter
+  results = jsonfilter data, graph.__params.filter
   results = results.map (result) ->
-    fillproperties result, graph.graph, subqueries
+    fillproperties result, graph.__graph, subqueries
   return null if results.length is 0
   if results.length isnt 1
     throw new Error 'One needed, many found'

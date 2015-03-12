@@ -72,10 +72,10 @@ merge = function(base, extra) {
       console.log(extra);
       return base;
     }
-    if ((base.__graph == null) || (extra.__graph == null)) {
+    if ((base.__shape == null) || (extra.__shape == null)) {
       return base;
     }
-    merge(base.__graph, extra.__graph);
+    merge(base.__shape, extra.__shape);
     return;
   } else if (extra.__query != null) {
     console.log('Query, ignoring');
@@ -95,11 +95,11 @@ merge = function(base, extra) {
 };
 
 module.exports = {
-  query: function(graph, query) {
+  query: function(name, query, shape) {
     return {
-      __query: query.name,
+      __query: name,
       __params: query,
-      __graph: graph
+      __shape: shape
     };
   },
   merge: function(queries) {

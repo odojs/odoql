@@ -1,40 +1,42 @@
 jsonfilter = require './json-filter'
 
-fillproperty = (data, graph, subqueries) ->
-  if graph.__params?
-    subqueries[graph.__query] data, graph, subqueries
-  else
-    fillproperties data, graph, subqueries
+fillproperty = (data, shape, subqueries) ->
+  if shape.__query?
+    return subqueries[shape.__query] data, shape, subqueries
+  fillproperties data, shape, subqueries
 
-fillproperties = (data, graph, subqueries) ->
+fillproperties = (data, shape, subqueries) ->
   return null if !data? or data is null
-  return data if typeof graph isnt 'object'
+  return data if typeof shape isnt 'object'
   result = {}
-  for key, shape of graph
+  for key, subshape of shape
     continue if !data[key]?
-    unless shape instanceof Array
-      result[key] = fillproperty data[key], shape, subqueries
+    unless subshape instanceof Array
+      result[key] = fillproperty data[key], subshape, subqueries
       continue
     unless data[key] instanceof Array
       throw Error 'Expecting array found ' + typeof data
-    shape = shape[0]
-    result[key] = data[key].map (d) -> fillproperty d, shape, subqueries
+    subshape = subshape[0]
+    result[key] = data[key].map (d) -> fillproperty d, subshape, subqueries
   result
 
-executequery = (data, graph, subqueries) ->
-  # if it's an array we return an array
-  if graph.__graph instanceof Array
-    results = jsonfilter data, graph.__params.filter
-    results = results.map (result) ->
-      fillproperties result, graph.__graph[0], subqueries
-    return results
-  # otherwise filter, fill and return one or none
-  results = jsonfilter data, graph.__params.filter
+# filter, fill and return one or none
+executesinglequery = (data, query, subqueries) ->
+  results = jsonfilter data, query.__params.filter
   results = results.map (result) ->
-    fillproperties result, graph.__graph, subqueries
+    fillproperties result, query.__shape, subqueries
   return null if results.length is 0
   if results.length isnt 1
     throw new Error 'One needed, many found'
-  return results[0]
+  results[0]
+
+executequery = (data, query, subqueries) ->
+  unless query.__shape instanceof Array
+    return executesinglequery data, query, subqueries
+  # if it's an array we return an array
+  results = jsonfilter data, query.__params.filter
+  results = results.map (result) ->
+    fillproperties result, query.__shape[0], subqueries
+  results
 
 module.exports = executequery

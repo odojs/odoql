@@ -41,9 +41,9 @@ merge = (base, extra) ->
       console.log 'Query does not match, ignoring'
       console.log extra
       return base
-    if !base.__graph? or !extra.__graph?
+    if !base.__shape? or !extra.__shape?
       return base
-    merge base.__graph, extra.__graph
+    merge base.__shape, extra.__shape
     return
   else if extra.__query?
     console.log 'Query, ignoring'
@@ -56,10 +56,10 @@ merge = (base, extra) ->
     base[key] = value
 
 module.exports =
-  query: (graph, query) ->
-    __query: query.name
+  query: (name, query, shape) ->
+    __query: name
     __params: query
-    __graph: graph
+    __shape: shape
   merge: (queries) ->
     return null if arguments.length is 0
     if arguments.length isnt 1

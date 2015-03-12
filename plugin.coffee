@@ -4,7 +4,6 @@ module.exports = (component, spec) ->
     spec.query.call component, params
   component.relay = (el, store, params) ->
     query = component.query params
-    console.log query
     state = store query
     scene = component.mount el, state, params
     update: (params) ->

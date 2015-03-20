@@ -1,6 +1,6 @@
 {
   "name": "odoql",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Odo query language",
   "main": "index.js",
   "scripts": {
@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/odojs/odoql",
   "dependencies": {
-    "extend": "^2.0.0"
+    "extend": "^2.0.0",
+    "jsondiffpatch": "^0.1.31",
+    "odo-async": "^1.0.0"
   }
 }

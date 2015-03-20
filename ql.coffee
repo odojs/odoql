@@ -1,4 +1,6 @@
 extend = require 'extend'
+jsondiffpatch = require 'jsondiffpatch'
+async = require 'odo-async'
 
 eq = (a, b) ->
   return yes if a is b
@@ -55,7 +57,11 @@ merge = (base, extra) ->
       continue
     base[key] = value
 
-module.exports =
+diffisdelete = (diff) ->
+  diff instanceof Array and diff.length is 3 and diff[1] is 0 and diff[2] is 0
+
+ql =
+  # TODO: Eventually support different caching models, or a simple option is to specify 'fresh' or nocache. With optimistic updates we can cache aggressively.
   query: (name, query, shape) ->
     __query: name
     __params: query
@@ -68,9 +74,63 @@ module.exports =
     result = {}
     merge result, extend {}, query for query in queries
     result
-  exec: (queries, stores) ->
+  # Return two queries, ones that match names and others that don't
+  split: (query, names) ->
+    known = {}
+    unknown = {}
+    for key, value of query
+      if value.__query in names
+        known[key] = value
+      else
+        unknown[key] = value
+    known: known
+    unknown: unknown
+  diff: (prev, next) ->
+    result = {}
+    diff = jsondiffpatch.diff prev, next
+    for key, value of diff
+      continue if diffisdelete value
+      # any changes require a re-query
+      result[key] = next[key]
+    for key, value of next
+      if value?.__params?.__nocache?
+        result[key] = value
+    result
+  exec: (queries, stores, callback) ->
+    tasks = []
+    errors = []
     state = {}
     for key, graph of queries
-      store = stores[graph.__query]
-      state[key] = store.query graph, store.subqueries
-    state
+      if !stores[graph.__query]?
+        throw new Error "#{graph.__query} query not found"
+      do (key, graph) ->
+        tasks.push (cb) ->
+          store = stores[graph.__query]
+          store graph, (err, diff) ->
+            if err?
+              errors.push err
+              return cb()
+            state[key] = diff
+            cb()
+    async.parallel tasks, ->
+      if errors.length isnt 0
+        return callback errors, state
+      callback null, state
+  execdiff: (prevquery, prevstate, query, stores, cb) ->
+    query = ql.diff prevquery, query
+    query = ql.split query, Object.keys stores
+    # perform local queries
+    ql.exec query.known, stores, (err, localresults) ->
+      return cb err if err?
+      state = extend {}, prevstate, localresults
+      if Object.keys(query.unknown).length is 0
+        cb null, state
+      if !stores['__dynamic']?
+        return cb new Error 'Unknown queries'
+      # server query
+      stores['__dynamic'] query.unknown, (err, dynamicresults) ->
+        return cb err if err?
+        state = extend state, dynamicresults
+        cb null, state
+
+module.exports = ql

@@ -136,11 +136,5 @@ ql =
         return cb errs if err?
         state = extend state, results
         cb null, state
-  execdiff: (prevquery, prevstate, query, stores, cb) ->
-    query = ql.diff prevquery, query
-    ql.exec query, stores, (err, results) ->
-      return cb err if err?
-      state = extend {}, prevstate, results
-      cb null, state
 
 module.exports = ql

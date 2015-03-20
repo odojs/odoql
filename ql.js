@@ -227,17 +227,6 @@ ql = {
         return cb(null, state);
       });
     });
-  },
-  execdiff: function(prevquery, prevstate, query, stores, cb) {
-    query = ql.diff(prevquery, query);
-    return ql.exec(query, stores, function(err, results) {
-      var state;
-      if (err != null) {
-        return cb(err);
-      }
-      state = extend({}, prevstate, results);
-      return cb(null, state);
-    });
   }
 };
 

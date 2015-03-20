@@ -104,12 +104,30 @@ diffisdelete = function(diff) {
 };
 
 ql = {
-  query: function(name, query, shape) {
+  query: function(name, params, shape) {
     return {
       __query: name,
-      __params: query,
+      __params: params,
       __shape: shape
     };
+  },
+  freshquery: function(name, params, shape) {
+    return {
+      __query: name,
+      __params: params,
+      __shape: shape,
+      __fresh: true
+    };
+  },
+  describe: function(query) {
+    return Object.keys(query).map(function(prop) {
+      var modifier;
+      modifier = '';
+      if (query[prop].__fresh != null) {
+        modifier = ' fresh';
+      }
+      return "" + prop + modifier + " from " + query[prop].__query;
+    }).join(', ');
   },
   merge: function(queries) {
     var query, result, _i, _len;
@@ -147,7 +165,7 @@ ql = {
     };
   },
   diff: function(prev, next) {
-    var diff, key, result, value, _ref;
+    var diff, key, result, value;
     result = {};
     diff = jsondiffpatch.diff(prev, next);
     for (key in diff) {
@@ -159,17 +177,19 @@ ql = {
     }
     for (key in next) {
       value = next[key];
-      if ((value != null ? (_ref = value.__params) != null ? _ref.__nocache : void 0 : void 0) != null) {
+      if ((value != null ? value.__fresh : void 0) != null) {
         result[key] = value;
       }
     }
     return result;
   },
-  exec: function(queries, stores, callback) {
-    var errors, graph, key, state, tasks, _fn;
+  exec: function(query, stores, cb) {
+    var errors, graph, key, state, tasks, _fn, _ref;
     tasks = [];
     errors = [];
     state = {};
+    query = ql.split(query, Object.keys(stores));
+    _ref = query.known;
     _fn = function(key, graph) {
       return tasks.push(function(cb) {
         var store;
@@ -184,8 +204,8 @@ ql = {
         });
       });
     };
-    for (key in queries) {
-      graph = queries[key];
+    for (key in _ref) {
+      graph = _ref[key];
       if (stores[graph.__query] == null) {
         throw new Error("" + graph.__query + " query not found");
       }
@@ -193,33 +213,32 @@ ql = {
     }
     return async.parallel(tasks, function() {
       if (errors.length !== 0) {
-        return callback(errors, state);
+        return cb(errors, state);
       }
-      return callback(null, state);
-    });
-  },
-  execdiff: function(prevquery, prevstate, query, stores, cb) {
-    query = ql.diff(prevquery, query);
-    query = ql.split(query, Object.keys(stores));
-    return ql.exec(query.known, stores, function(err, localresults) {
-      var state;
-      if (err != null) {
-        return cb(err);
-      }
-      state = extend({}, prevstate, localresults);
       if (Object.keys(query.unknown).length === 0) {
-        cb(null, state);
+        return cb(null, state);
       }
       if (stores['__dynamic'] == null) {
         return cb(new Error('Unknown queries'));
       }
-      return stores['__dynamic'](query.unknown, function(err, dynamicresults) {
-        if (err != null) {
-          return cb(err);
+      return stores['__dynamic'](query.unknown, function(errs, results) {
+        if (typeof err !== "undefined" && err !== null) {
+          return cb(errs);
         }
-        state = extend(state, dynamicresults);
+        state = extend(state, results);
         return cb(null, state);
       });
+    });
+  },
+  execdiff: function(prevquery, prevstate, query, stores, cb) {
+    query = ql.diff(prevquery, query);
+    return ql.exec(query, stores, function(err, results) {
+      var state;
+      if (err != null) {
+        return cb(err);
+      }
+      state = extend({}, prevstate, results);
+      return cb(null, state);
     });
   }
 };

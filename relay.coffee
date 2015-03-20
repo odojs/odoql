@@ -30,6 +30,7 @@ module.exports = (el, component, store) ->
     updateParams: (params) ->
       extend memory, params
     
+    # TODO: better timing
     executeQuery: (cb) ->
       newquery = component.query memory
       store query, state, newquery, (err, result) ->

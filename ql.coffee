@@ -61,11 +61,22 @@ diffisdelete = (diff) ->
   diff instanceof Array and diff.length is 3 and diff[1] is 0 and diff[2] is 0
 
 ql =
-  # TODO: Eventually support different caching models, or a simple option is to specify 'fresh' or nocache. With optimistic updates we can cache aggressively.
-  query: (name, query, shape) ->
+  query: (name, params, shape) ->
     __query: name
-    __params: query
+    __params: params
     __shape: shape
+  freshquery: (name, params, shape) ->
+    __query: name
+    __params: params
+    __shape: shape
+    __fresh: yes
+  describe: (query) ->
+    Object.keys query
+      .map (prop) ->
+        modifier = ''
+        modifier = ' fresh' if query[prop].__fresh?
+        "#{prop}#{modifier} from #{query[prop].__query}"
+      .join ', '
   merge: (queries) ->
     return null if arguments.length is 0
     if arguments.length isnt 1
@@ -93,14 +104,15 @@ ql =
       # any changes require a re-query
       result[key] = next[key]
     for key, value of next
-      if value?.__params?.__nocache?
+      if value?.__fresh?
         result[key] = value
     result
-  exec: (queries, stores, callback) ->
+  exec: (query, stores, cb) ->
     tasks = []
     errors = []
     state = {}
-    for key, graph of queries
+    query = ql.split query, Object.keys stores
+    for key, graph of query.known
       if !stores[graph.__query]?
         throw new Error "#{graph.__query} query not found"
       do (key, graph) ->
@@ -114,23 +126,21 @@ ql =
             cb()
     async.parallel tasks, ->
       if errors.length isnt 0
-        return callback errors, state
-      callback null, state
-  execdiff: (prevquery, prevstate, query, stores, cb) ->
-    query = ql.diff prevquery, query
-    query = ql.split query, Object.keys stores
-    # perform local queries
-    ql.exec query.known, stores, (err, localresults) ->
-      return cb err if err?
-      state = extend {}, prevstate, localresults
+        return cb errors, state
       if Object.keys(query.unknown).length is 0
-        cb null, state
+        return cb null, state
       if !stores['__dynamic']?
         return cb new Error 'Unknown queries'
       # server query
-      stores['__dynamic'] query.unknown, (err, dynamicresults) ->
-        return cb err if err?
-        state = extend state, dynamicresults
+      stores['__dynamic'] query.unknown, (errs, results) ->
+        return cb errs if err?
+        state = extend state, results
         cb null, state
+  execdiff: (prevquery, prevstate, query, stores, cb) ->
+    query = ql.diff prevquery, query
+    ql.exec query, stores, (err, results) ->
+      return cb err if err?
+      state = extend {}, prevstate, results
+      cb null, state
 
 module.exports = ql

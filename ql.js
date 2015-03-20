@@ -120,14 +120,12 @@ ql = {
     };
   },
   describe: function(query) {
-    return Object.keys(query).map(function(prop) {
-      var modifier;
-      modifier = '';
-      if (query[prop].__fresh != null) {
-        modifier = ' fresh';
-      }
-      return "" + prop + modifier + " from " + query[prop].__query;
-    }).join(', ');
+    if (Object.keys(query).length === 0) {
+      return '-- no query --';
+    }
+    return '+ query\n' + Object.keys(query).map(function(prop) {
+      return "  " + prop + " from " + query[prop].__query;
+    }).join('\n');
   },
   merge: function(queries) {
     var query, result, _i, _len;

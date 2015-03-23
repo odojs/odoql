@@ -107,32 +107,58 @@ ql =
       if value?.__fresh?
         result[key] = value
     result
+  # build: (query, stores) ->
+  #   result = {}
+  #   query = ql.split query, Object.keys stores
+  #   for key, graph of query.known
+  #     do (key, graph) ->
+  #       result[key] = (cb) ->
+  #         stores[graph.__query] graph, cb
+  #   if Object.keys(query.unknown).length is 0
+  #     return result
+  #   if !stores.__dynamic?
+  #     return cb new Error 'Unknown queries'
+  #   result.__dynamic = (cb) ->
+  #     stores.__dynamic query.unknown, cb
+  plan: (query, stores) ->
+    result = []
+    query = ql.split query, Object.keys stores
+    for key, graph of query.known
+      result.push
+        keys: [key]
+        query: graph
+    if Object.keys(query.unknown).length is 0
+      return result
+    if !stores.__dynamic?
+      return cb new Error 'Unknown queries'
+    result.push
+      keys: Object.keys query.unknown
+      query: ql.query '__dynamic', query.unknown
+    result
   exec: (query, stores, cb) ->
     tasks = []
     errors = []
     state = {}
     query = ql.split query, Object.keys stores
     for key, graph of query.known
-      if !stores[graph.__query]?
-        throw new Error "#{graph.__query} query not found"
       do (key, graph) ->
         tasks.push (cb) ->
           store = stores[graph.__query]
-          store graph, (err, diff) ->
+          store { item: graph }, (err, diff) ->
             if err?
               errors.push err
               return cb()
-            state[key] = diff
+            state[key] = diff.item
             cb()
     async.parallel tasks, ->
       if errors.length isnt 0
         return cb errors, state
       if Object.keys(query.unknown).length is 0
         return cb null, state
-      if !stores['__dynamic']?
+      if !stores.__dynamic?
         return cb new Error 'Unknown queries'
       # server query
-      stores['__dynamic'] query.unknown, (errs, results) ->
+      stores.__dynamic query.unknown, (errs, results) ->
         return cb errs if err?
         state = extend state, results
         cb null, state

@@ -181,6 +181,30 @@ ql = {
     }
     return result;
   },
+  plan: function(query, stores) {
+    var graph, key, result, _ref;
+    result = [];
+    query = ql.split(query, Object.keys(stores));
+    _ref = query.known;
+    for (key in _ref) {
+      graph = _ref[key];
+      result.push({
+        keys: [key],
+        query: graph
+      });
+    }
+    if (Object.keys(query.unknown).length === 0) {
+      return result;
+    }
+    if (stores.__dynamic == null) {
+      return cb(new Error('Unknown queries'));
+    }
+    result.push({
+      keys: Object.keys(query.unknown),
+      query: ql.query('__dynamic', query.unknown)
+    });
+    return result;
+  },
   exec: function(query, stores, cb) {
     var errors, graph, key, state, tasks, _fn, _ref;
     tasks = [];
@@ -192,21 +216,20 @@ ql = {
       return tasks.push(function(cb) {
         var store;
         store = stores[graph.__query];
-        return store(graph, function(err, diff) {
+        return store({
+          item: graph
+        }, function(err, diff) {
           if (err != null) {
             errors.push(err);
             return cb();
           }
-          state[key] = diff;
+          state[key] = diff.item;
           return cb();
         });
       });
     };
     for (key in _ref) {
       graph = _ref[key];
-      if (stores[graph.__query] == null) {
-        throw new Error("" + graph.__query + " query not found");
-      }
       _fn(key, graph);
     }
     return async.parallel(tasks, function() {
@@ -216,10 +239,10 @@ ql = {
       if (Object.keys(query.unknown).length === 0) {
         return cb(null, state);
       }
-      if (stores['__dynamic'] == null) {
+      if (stores.__dynamic == null) {
         return cb(new Error('Unknown queries'));
       }
-      return stores['__dynamic'](query.unknown, function(errs, results) {
+      return stores.__dynamic(query.unknown, function(errs, results) {
         if (typeof err !== "undefined" && err !== null) {
           return cb(errs);
         }

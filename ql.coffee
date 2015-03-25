@@ -72,11 +72,11 @@ ql =
     __fresh: yes
   describe: (query) ->
     return '-- no query --' if Object.keys(query).length is 0
-    '+ query\n' +
-    Object.keys query
-      .map (prop) ->
-        "  #{prop} from #{query[prop].__query}"
-      .join '\n'
+    '? query\n' +
+      Object.keys query
+        .map (prop) ->
+          "  #{prop} from #{query[prop].__query}"
+        .join '\n'
   merge: (queries) ->
     return null if arguments.length is 0
     if arguments.length isnt 1
@@ -107,33 +107,26 @@ ql =
       if value?.__fresh?
         result[key] = value
     result
-  # build: (query, stores) ->
-  #   result = {}
-  #   query = ql.split query, Object.keys stores
-  #   for key, graph of query.known
-  #     do (key, graph) ->
-  #       result[key] = (cb) ->
-  #         stores[graph.__query] graph, cb
-  #   if Object.keys(query.unknown).length is 0
-  #     return result
-  #   if !stores.__dynamic?
-  #     return cb new Error 'Unknown queries'
-  #   result.__dynamic = (cb) ->
-  #     stores.__dynamic query.unknown, cb
-  plan: (query, stores) ->
+  build: (query, stores) ->
     result = []
     query = ql.split query, Object.keys stores
     for key, graph of query.known
+      q = {}
+      q[key] = graph
       result.push
         keys: [key]
-        query: graph
+        __query: graph.__query
+        query: (cb) -> stores[graph.__query] q, cb
+        queries: q
     if Object.keys(query.unknown).length is 0
       return result
     if !stores.__dynamic?
       return cb new Error 'Unknown queries'
     result.push
       keys: Object.keys query.unknown
-      query: ql.query '__dynamic', query.unknown
+      __query: '__dynamic'
+      query: (cb) -> stores.__dynamic query.unknown, cb
+      queries: query.unknown
     result
   exec: (query, stores, cb) ->
     tasks = []

@@ -123,7 +123,7 @@ ql = {
     if (Object.keys(query).length === 0) {
       return '-- no query --';
     }
-    return '+ query\n' + Object.keys(query).map(function(prop) {
+    return '? query\n' + Object.keys(query).map(function(prop) {
       return "  " + prop + " from " + query[prop].__query;
     }).join('\n');
   },
@@ -181,16 +181,22 @@ ql = {
     }
     return result;
   },
-  plan: function(query, stores) {
-    var graph, key, result, _ref;
+  build: function(query, stores) {
+    var graph, key, q, result, _ref;
     result = [];
     query = ql.split(query, Object.keys(stores));
     _ref = query.known;
     for (key in _ref) {
       graph = _ref[key];
+      q = {};
+      q[key] = graph;
       result.push({
         keys: [key],
-        query: graph
+        __query: graph.__query,
+        query: function(cb) {
+          return stores[graph.__query](q, cb);
+        },
+        queries: q
       });
     }
     if (Object.keys(query.unknown).length === 0) {
@@ -201,7 +207,11 @@ ql = {
     }
     result.push({
       keys: Object.keys(query.unknown),
-      query: ql.query('__dynamic', query.unknown)
+      __query: '__dynamic',
+      query: function(cb) {
+        return stores.__dynamic(query.unknown, cb);
+      },
+      queries: query.unknown
     });
     return result;
   },

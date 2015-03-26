@@ -123,7 +123,7 @@ ql = {
     if (Object.keys(query).length === 0) {
       return '-- no query --';
     }
-    return '? query\n' + Object.keys(query).map(function(prop) {
+    return 'query\n' + Object.keys(query).map(function(prop) {
       return "  " + prop + " from " + query[prop].__query;
     }).join('\n');
   },

@@ -72,11 +72,10 @@ ql =
     __fresh: yes
   describe: (query) ->
     return '-- no query --' if Object.keys(query).length is 0
-    '? query\n' +
-      Object.keys query
-        .map (prop) ->
-          "  #{prop} from #{query[prop].__query}"
-        .join '\n'
+    'query\n' + Object.keys query
+      .map (prop) ->
+        "  #{prop} from #{query[prop].__query}"
+      .join '\n'
   merge: (queries) ->
     return null if arguments.length is 0
     if arguments.length isnt 1

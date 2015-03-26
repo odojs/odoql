@@ -107,52 +107,48 @@ ql =
         result[key] = value
     result
   build: (query, stores) ->
-    result = []
+    queries = {}
     query = ql.split query, Object.keys stores
     for key, graph of query.known
-      q = {}
-      q[key] = graph
-      result.push
-        keys: [key]
-        __query: graph.__query
-        query: (cb) -> stores[graph.__query] q, cb
-        queries: q
+      if !queries[graph.__query]?
+        queries[graph.__query] =
+          __query: graph.__query
+          keys: []
+          queries: {}
+      queries[graph.__query].keys.push key
+      queries[graph.__query].queries[key] = graph
+    result = []
+    for _, item of queries
+      do (item) ->
+        item.query = (cb) -> stores[item.__query] item.queries, cb
+        result.push item
     if Object.keys(query.unknown).length is 0
       return result
     if !stores.__dynamic?
       return cb new Error 'Unknown queries'
     result.push
-      keys: Object.keys query.unknown
       __query: '__dynamic'
+      keys: Object.keys query.unknown
       query: (cb) -> stores.__dynamic query.unknown, cb
       queries: query.unknown
     result
-  exec: (query, stores, cb) ->
-    tasks = []
+  exec: (query, stores, callback) ->
+    query = ql.build query, stores
+    console.log query
     errors = []
+    tasks = []
     state = {}
-    query = ql.split query, Object.keys stores
-    for key, graph of query.known
-      do (key, graph) ->
-        tasks.push (cb) ->
-          store = stores[graph.__query]
-          store { item: graph }, (err, diff) ->
-            if err?
-              errors.push err
-              return cb()
-            state[key] = diff.item
-            cb()
+    for q in query
+      do (q) ->
+        tasks.push (cb) -> q.query (err, results) ->
+          if err?
+            errors.push err
+          else
+            extend state, results
+          cb()
     async.parallel tasks, ->
       if errors.length isnt 0
-        return cb errors, state
-      if Object.keys(query.unknown).length is 0
-        return cb null, state
-      if !stores.__dynamic?
-        return cb new Error 'Unknown queries'
-      # server query
-      stores.__dynamic query.unknown, (errs, results) ->
-        return cb errs if err?
-        state = extend state, results
-        cb null, state
+        return callback errors, state
+      return callback null, state
 
 module.exports = ql

@@ -182,22 +182,32 @@ ql = {
     return result;
   },
   build: function(query, stores) {
-    var graph, key, q, result, _ref;
-    result = [];
+    var graph, item, key, queries, result, _, _fn, _ref;
+    queries = {};
     query = ql.split(query, Object.keys(stores));
     _ref = query.known;
     for (key in _ref) {
       graph = _ref[key];
-      q = {};
-      q[key] = graph;
-      result.push({
-        keys: [key],
-        __query: graph.__query,
-        query: function(cb) {
-          return stores[graph.__query](q, cb);
-        },
-        queries: q
-      });
+      if (queries[graph.__query] == null) {
+        queries[graph.__query] = {
+          __query: graph.__query,
+          keys: [],
+          queries: {}
+        };
+      }
+      queries[graph.__query].keys.push(key);
+      queries[graph.__query].queries[key] = graph;
+    }
+    result = [];
+    _fn = function(item) {
+      item.query = function(cb) {
+        return stores[item.__query](item.queries, cb);
+      };
+      return result.push(item);
+    };
+    for (_ in queries) {
+      item = queries[_];
+      _fn(item);
     }
     if (Object.keys(query.unknown).length === 0) {
       return result;
@@ -206,8 +216,8 @@ ql = {
       return cb(new Error('Unknown queries'));
     }
     result.push({
-      keys: Object.keys(query.unknown),
       __query: '__dynamic',
+      keys: Object.keys(query.unknown),
       query: function(cb) {
         return stores.__dynamic(query.unknown, cb);
       },
@@ -215,50 +225,34 @@ ql = {
     });
     return result;
   },
-  exec: function(query, stores, cb) {
-    var errors, graph, key, state, tasks, _fn, _ref;
-    tasks = [];
+  exec: function(query, stores, callback) {
+    var errors, q, state, tasks, _fn, _i, _len;
+    query = ql.build(query, stores);
+    console.log(query);
     errors = [];
+    tasks = [];
     state = {};
-    query = ql.split(query, Object.keys(stores));
-    _ref = query.known;
-    _fn = function(key, graph) {
+    _fn = function(q) {
       return tasks.push(function(cb) {
-        var store;
-        store = stores[graph.__query];
-        return store({
-          item: graph
-        }, function(err, diff) {
+        return q.query(function(err, results) {
           if (err != null) {
             errors.push(err);
-            return cb();
+          } else {
+            extend(state, results);
           }
-          state[key] = diff.item;
           return cb();
         });
       });
     };
-    for (key in _ref) {
-      graph = _ref[key];
-      _fn(key, graph);
+    for (_i = 0, _len = query.length; _i < _len; _i++) {
+      q = query[_i];
+      _fn(q);
     }
     return async.parallel(tasks, function() {
       if (errors.length !== 0) {
-        return cb(errors, state);
+        return callback(errors, state);
       }
-      if (Object.keys(query.unknown).length === 0) {
-        return cb(null, state);
-      }
-      if (stores.__dynamic == null) {
-        return cb(new Error('Unknown queries'));
-      }
-      return stores.__dynamic(query.unknown, function(errs, results) {
-        if (typeof err !== "undefined" && err !== null) {
-          return cb(errs);
-        }
-        state = extend(state, results);
-        return cb(null, state);
-      });
+      return callback(null, state);
     });
   }
 };

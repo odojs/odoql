@@ -14,6 +14,9 @@ module.exports =
     lowercase: (exe, params) ->
       helpers.unary exe, params, (source) ->
         source.toLowerCase()
+    toString: (exe, params) ->
+      helpers.unary exe, params, (source) ->
+        source.toString()
   binary:
     concat: (exe, params) ->
       helpers.binary exe, params, (left, right) ->

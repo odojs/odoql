@@ -25,21 +25,15 @@ module.exports = {
         };
       },
       use: function(def) {
-        var _, fn, name, optype, results;
-        results = [];
+        var _, fn, name, optype;
         for (_ in def) {
           optype = def[_];
-          results.push((function() {
-            var results1;
-            results1 = [];
-            for (name in optype) {
-              fn = optype[name];
-              results1.push(providers[name] = fn);
-            }
-            return results1;
-          })());
+          for (name in optype) {
+            fn = optype[name];
+            providers[name] = fn;
+          }
         }
-        return results;
+        return res;
       },
       build: function(q) {
         if (!isquery(q)) {

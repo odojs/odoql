@@ -155,10 +155,10 @@ ql.use = function(def) {
   }
   res.providers = [];
   res.use = function(def) {
+    applyglobals(res, def);
     res.providers.push(def);
     return res;
   };
-  applyglobals(res, def);
   res;
   for (i = 0, len = ops.length; i < len; i++) {
     source = ops[i];

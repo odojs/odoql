@@ -15,6 +15,7 @@ module.exports =
         for _, optype of def
           for name, fn of optype
             providers[name] = fn
+        res
       build: (q) ->
         return res.providers.literal res, q unless isquery q
         if !res.providers[q.__q]?

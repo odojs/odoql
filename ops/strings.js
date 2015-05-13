@@ -24,6 +24,11 @@ module.exports = {
       return helpers.unary(exe, params, function(source) {
         return source.toLowerCase();
       });
+    },
+    toString: function(exe, params) {
+      return helpers.unary(exe, params, function(source) {
+        return source.toString();
+      });
     }
   },
   binary: {

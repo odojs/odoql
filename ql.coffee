@@ -69,9 +69,9 @@ ql.use = (def) ->
     res[name] = fn
   res.providers = []
   res.use = (def) ->
+    applyglobals res, def
     res.providers.push def
     res
-  applyglobals res, def
   res
   # attach methods against ql directly
   res.use source for source in ops

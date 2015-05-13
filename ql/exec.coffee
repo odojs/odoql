@@ -1,6 +1,6 @@
-build = require './build'
-async = require 'odo-async'
 extend = require 'extend'
+build = require './build'
+async = require 'odoql-utils/async'
 
 module.exports = (query, stores, callback) ->
   query = build query, stores

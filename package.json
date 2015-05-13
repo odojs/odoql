@@ -23,6 +23,6 @@
   "dependencies": {
     "extend": "^2.0.0",
     "jsondiffpatch": "^0.1.31",
-    "odo-async": "^1.0.0"
+    "odoql-utils": "1.0.0"
   }
 }

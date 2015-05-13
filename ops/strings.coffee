@@ -1,4 +1,4 @@
-helpers = require './helpers'
+helpers = require 'odoql-utils/helpers'
 
 module.exports =
   params:

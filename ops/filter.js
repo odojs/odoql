@@ -28,8 +28,6 @@ module.exports = {
               var def, fillrefs;
               fillrefs = function(node, cb) {
                 var getref;
-                console.log('visiting');
-                console.log(JSON.stringify(node));
                 if ((node.__q == null) || node.__q !== 'ref') {
                   return cb();
                 }
@@ -39,7 +37,6 @@ module.exports = {
                   if (err != null) {
                     throw new Error(err);
                   }
-                  console.log("Looking up " + res + " to " + data[res]);
                   return cb((ref = data[res]) != null ? ref : '');
                 });
               };
@@ -49,15 +46,11 @@ module.exports = {
                 if (err != null) {
                   return callback(err);
                 }
-                console.log('filled');
-                console.log(filled);
                 getref = exe.build(filled);
                 return getref(function(err, value) {
                   if (err != null) {
                     return callback(err);
                   }
-                  console.log('value');
-                  console.log(value);
                   results[index] = value;
                   return cb();
                 });

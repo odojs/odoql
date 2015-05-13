@@ -17,25 +17,18 @@ module.exports =
             do (data, index) ->
               tasks.push (cb) ->
                 fillrefs = (node, cb) ->
-                  console.log 'visiting'
-                  console.log JSON.stringify node
                   return cb() if !node.__q? or node.__q isnt 'ref'
                   getref = exe.build node.__s
                   getref (err, res) ->
                     throw new Error err if err?
-                    console.log "Looking up #{res} to #{data[res]}"
                     cb data[res] ? ''
                 # copy def
                 def = extend yes, {}, params.__p
                 visit def, fillrefs, (filled) ->
                   return callback err if err?
-                  console.log 'filled'
-                  console.log filled
                   getref = exe.build filled
                   getref (err, value) ->
                     return callback err if err?
-                    console.log 'value'
-                    console.log value
                     results[index] = value
                     cb()
           async.series tasks, ->

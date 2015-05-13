@@ -1,9 +1,4 @@
-builtin = [
-  require './ops/boolean'
-  require './ops/conditional'
-  require './ops/maths'
-  require './ops/transform'
-]
+ops = require './ops'
 
 isquery = require './isquery'
 
@@ -24,5 +19,5 @@ module.exports =
           throw new Error "#{q.__query} not found"
         return res.providers[q.__query] res, q
     res.use def
-    res.use def for def in builtin
+    res.use def for def in ops
     res

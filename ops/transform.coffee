@@ -2,11 +2,6 @@ helpers = require '../ops/helpers'
 
 module.exports =
   params:
-    findandreplace: (exe, params) ->
-      helpers.params exe, params, (params, source) ->
-        if typeof(source) isnt 'string'
-          throw new Error 'Expecting string for findandreplace'
-        source.replace new RegExp(params.find, params.flags), params.replace
     pluck: (exe, params) ->
       helpers.params exe, params, (params, source) ->
         plu = (d) -> d[params]
@@ -35,7 +30,7 @@ module.exports =
           source.map sha
         else
           sha source
-    translate: (exe, params) ->
+    rename: (exe, params) ->
       helpers.params exe, params, (params, source) ->
         trans = (d) ->
           for target, source of params
@@ -47,7 +42,9 @@ module.exports =
           source.map trans
         else
           trans source
-
+  unary:
+    ref: (exe, params) ->
+      throw new Error 'References should not be executed'
     count: (exe, params) ->
       helpers.unary exe, params, (source) ->
         unless source instanceof Array

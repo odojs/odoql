@@ -4,7 +4,7 @@ ql = (query, def) ->
   res =
     query: -> query
     fresh: ->
-      query.__fresh = yes
+      query.__f = yes
       res
     clone: -> ql query, def
   for source in def
@@ -30,6 +30,37 @@ ql = (query, def) ->
           res
   res
 
+ql.params = (name, params, source) ->
+  __q: name
+  __p: params
+  __s: source
+ql.unary = (name, source) ->
+  __q: name
+  __s: source
+ql.binary = (name, left, right) ->
+  __q: name
+  __l: left
+  __r: right
+ql.trinary = (name, params, left, right) ->
+  __q: name
+  __p: params
+  __l: left
+  __r: right
+
+applyglobals = (res, def) ->
+  for name, _ of def.params
+    do (name) -> res[name] = (params, source) ->
+      ql.params name, params, source
+  for name, _ of def.unary
+    do (name) -> res[name] = (source) ->
+      ql.unary name, source
+  for name, _ of def.binary
+    do (name) -> res[name] = (left, right) ->
+      ql.binary name, left, right
+  for name, _ of def.trinary
+    do (name) -> res[name] = (params, left, right) ->
+      ql.trinary name, params, left, right
+
 # attach methods against a query in progress
 ql.use = (def) ->
   res = (query) ->
@@ -40,39 +71,14 @@ ql.use = (def) ->
   res.use = (def) ->
     res.providers.push def
     res
-  for name, _ of def.params
-    do (name) -> res[name] = (params, source) ->
-      res.params name, params, source
-  for name, _ of def.unary
-    do (name) -> res[name] = (source) ->
-      res.unary name, source
-  for name, _ of def.binary
-    do (name) -> res[name] = (left, right) ->
-      res.binary name, left, right
-  for name, _ of def.trinary
-    do (name) -> res[name] = (params, left, right) ->
-      res.trinary name, params, left, right
+  applyglobals res, def
   res
   # attach methods against ql directly
   res.use source for source in ops
   res.use def
 
-ql.params = (name, params, source) ->
-  __query: name
-  __params: params
-  __source: source
-ql.unary = (name, source) ->
-  __query: name
-  __source: source
-ql.binary = (name, left, right) ->
-  __query: name
-  __left: left
-  __right: right
-ql.trinary = (name, params, left, right) ->
-  __query: name
-  __params: params
-  __left: left
-  __right: right
+for def in ops
+  applyglobals ql, def
 
 ql.desc = require './ql/desc'
 ql.merge = require './ql/merge'

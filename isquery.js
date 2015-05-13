@@ -3,5 +3,5 @@ module.exports = function(q) {
   if (typeof q !== 'object') {
     return false;
   }
-  return q.__query != null;
+  return q.__q != null;
 };

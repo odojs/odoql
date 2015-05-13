@@ -1,9 +1,9 @@
 module.exports =
   trinary:
     if: (exe, params) ->
-      getparams = exe.build params.__params
-      getleft = exe.build params.__left
-      getright = exe.build params.__right
+      getparams = exe.build params.__p
+      getleft = exe.build params.__l
+      getright = exe.build params.__r
       (cb) ->
         getparams (err, params) ->
           return cb err if err?
@@ -16,9 +16,9 @@ module.exports =
               return cb err if err?
               cb null, right
     unless: (exe, params) ->
-      getparams = exe.build params.__params
-      getleft = exe.build params.__left
-      getright = exe.build params.__right
+      getparams = exe.build params.__p
+      getleft = exe.build params.__l
+      getright = exe.build params.__r
       (cb) ->
         getparams (err, params) ->
           return cb err if err?

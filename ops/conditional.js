@@ -3,9 +3,9 @@ module.exports = {
   trinary: {
     "if": function(exe, params) {
       var getleft, getparams, getright;
-      getparams = exe.build(params.__params);
-      getleft = exe.build(params.__left);
-      getright = exe.build(params.__right);
+      getparams = exe.build(params.__p);
+      getleft = exe.build(params.__l);
+      getright = exe.build(params.__r);
       return function(cb) {
         return getparams(function(err, params) {
           if (err != null) {
@@ -31,9 +31,9 @@ module.exports = {
     },
     unless: function(exe, params) {
       var getleft, getparams, getright;
-      getparams = exe.build(params.__params);
-      getleft = exe.build(params.__left);
-      getright = exe.build(params.__right);
+      getparams = exe.build(params.__p);
+      getleft = exe.build(params.__l);
+      getright = exe.build(params.__r);
       return function(cb) {
         return getparams(function(err, params) {
           if (err != null) {

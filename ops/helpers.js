@@ -2,8 +2,8 @@
 module.exports = {
   binary: function(exe, params, callback) {
     var getleft, getright;
-    getleft = exe.build(params.__left);
-    getright = exe.build(params.__right);
+    getleft = exe.build(params.__l);
+    getright = exe.build(params.__r);
     return function(cb) {
       return getleft(function(err, left) {
         if (err != null) {
@@ -20,7 +20,7 @@ module.exports = {
   },
   unary: function(exe, params, callback) {
     var getsource;
-    getsource = exe.build(params.__source);
+    getsource = exe.build(params.__s);
     return function(cb) {
       return getsource(function(err, source) {
         if (err != null) {
@@ -32,8 +32,8 @@ module.exports = {
   },
   params: function(exe, params, callback) {
     var getparams, getsource;
-    getparams = exe.build(params.__params);
-    getsource = exe.build(params.__source);
+    getparams = exe.build(params.__p);
+    getsource = exe.build(params.__s);
     return function(cb) {
       return getparams(function(err, params) {
         if (err != null) {

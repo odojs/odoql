@@ -7,8 +7,8 @@ module.exports = {
   binary: {
     or: function(exe, params) {
       var getleft, getright;
-      getleft = exe.build(params.__left);
-      getright = exe.build(params.__right);
+      getleft = exe.build(params.__l);
+      getright = exe.build(params.__r);
       return function(cb) {
         return getleft(function(err, left) {
           if (err != null) {
@@ -29,6 +29,31 @@ module.exports = {
     and: function(exe, params) {
       return helpers.binary(exe, params, function(left, right) {
         return left && right;
+      });
+    },
+    gt: function(exe, params) {
+      return helpers.binary(exe, params, function(left, right) {
+        return left > right;
+      });
+    },
+    gte: function(exe, params) {
+      return helpers.binary(exe, params, function(left, right) {
+        return left >= right;
+      });
+    },
+    lt: function(exe, params) {
+      return helpers.binary(exe, params, function(left, right) {
+        return left < right;
+      });
+    },
+    lte: function(exe, params) {
+      return helpers.binary(exe, params, function(left, right) {
+        return left <= right;
+      });
+    },
+    eq: function(exe, params) {
+      return helpers.binary(exe, params, function(left, right) {
+        return left === right;
       });
     }
   },

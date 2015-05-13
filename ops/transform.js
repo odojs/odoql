@@ -5,14 +5,6 @@ helpers = require('../ops/helpers');
 
 module.exports = {
   params: {
-    findandreplace: function(exe, params) {
-      return helpers.params(exe, params, function(params, source) {
-        if (typeof source !== 'string') {
-          throw new Error('Expecting string for findandreplace');
-        }
-        return source.replace(new RegExp(params.find, params.flags), params.replace);
-      });
-    },
     pluck: function(exe, params) {
       return helpers.params(exe, params, function(params, source) {
         var plu;
@@ -63,7 +55,7 @@ module.exports = {
         }
       });
     },
-    translate: function(exe, params) {
+    rename: function(exe, params) {
       return helpers.params(exe, params, function(params, source) {
         var trans;
         trans = function(d) {
@@ -82,6 +74,11 @@ module.exports = {
           return trans(source);
         }
       });
+    }
+  },
+  unary: {
+    ref: function(exe, params) {
+      throw new Error('References should not be executed');
     },
     count: function(exe, params) {
       return helpers.unary(exe, params, function(source) {

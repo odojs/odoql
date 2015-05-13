@@ -1,6 +1,22 @@
 async = require 'odo-async'
 extend = require 'extend'
 
+visit = (node, nodecb, fincb) ->
+  # non object types
+  if typeof(node) isnt 'object'
+    return fincb node
+  nodecb node, (replacement) ->
+    if replacement?
+      return fincb replacement
+    tasks = []
+    for key, value of node
+      do (key, value) ->
+        tasks.push (cb) ->
+          visit value, nodecb, (replacement) ->
+            node[key] = replacement
+            cb()
+    async.series tasks, -> fincb node
+
 module.exports =
   params:
     assign: (exe, params) ->
@@ -8,32 +24,23 @@ module.exports =
       (callback) ->
         getsource (err, source) ->
           return cb err if err?
-          assi = (data, prop, def) -> (cb) ->
-            fillrefs = (d, cb) ->
-              return cb null, d unless typeof(d) is 'object'
-              if d.__q is 'ref'
-                getref = exe.build d.__s
-                return getref (err, ref) ->
-                  return callback err if err?
-                  cb null, data[ref]
-              tasks = []
-              for key, value of d
-                do (key, value) ->
-                  tasks.push (cb) ->
-                    fillrefs value, (err, res) ->
-                      d[key] = res
-                      cb()
-              async.series tasks, ->
-                cb null, d
+          assi = (data, prop, def) -> (fincb) ->
+            fillrefs = (node, cb) ->
+              return cb() if !node.__q? or node.__q isnt 'ref'
+              getref = exe.build node.__s
+              getref (err, res) ->
+                throw new Error err if err?
+                cb data[res]
             # copy def
             def = extend yes, {}, def
-            fillrefs def, (err, filled) ->
+            visit def, fillrefs, (filled) ->
               return callback err if err?
+              console.log filled
               getref = exe.build filled
               getref (err, value) ->
                 return callback err if err?
                 data[prop] = value
-                cb()
+                fincb()
             
           tasks = []
           if source instanceof Array

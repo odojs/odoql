@@ -5,33 +5,7 @@ async = require('odo-async');
 
 extend = require('extend');
 
-visit = function(node, nodecb, fincb) {
-  if (typeof node !== 'object') {
-    return fincb(node);
-  }
-  return nodecb(node, function(replacement) {
-    var fn, key, tasks, value;
-    if (replacement != null) {
-      return fincb(replacement);
-    }
-    tasks = [];
-    fn = function(key, value) {
-      return tasks.push(function(cb) {
-        return visit(value, nodecb, function(replacement) {
-          node[key] = replacement;
-          return cb();
-        });
-      });
-    };
-    for (key in node) {
-      value = node[key];
-      fn(key, value);
-    }
-    return async.series(tasks, function() {
-      return fincb(node);
-    });
-  });
-};
+visit = require('../util/visit');
 
 module.exports = {
   params: {
@@ -54,10 +28,11 @@ module.exports = {
                 }
                 getref = exe.build(node.__s);
                 return getref(function(err, res) {
+                  var ref;
                   if (err != null) {
                     throw new Error(err);
                   }
-                  return cb(data[res]);
+                  return cb((ref = data[res]) != null ? ref : null);
                 });
               };
               def = extend(true, {}, def);
@@ -66,7 +41,6 @@ module.exports = {
                 if (err != null) {
                   return callback(err);
                 }
-                console.log(filled);
                 getref = exe.build(filled);
                 return getref(function(err, value) {
                   if (err != null) {

@@ -1,21 +1,6 @@
 async = require 'odo-async'
 extend = require 'extend'
-
-visit = (node, nodecb, fincb) ->
-  # non object types
-  if typeof(node) isnt 'object'
-    return fincb node
-  nodecb node, (replacement) ->
-    if replacement?
-      return fincb replacement
-    tasks = []
-    for key, value of node
-      do (key, value) ->
-        tasks.push (cb) ->
-          visit value, nodecb, (replacement) ->
-            node[key] = replacement
-            cb()
-    async.series tasks, -> fincb node
+visit = require '../util/visit'
 
 module.exports =
   params:
@@ -30,12 +15,11 @@ module.exports =
               getref = exe.build node.__s
               getref (err, res) ->
                 throw new Error err if err?
-                cb data[res]
+                cb data[res] ? null
             # copy def
             def = extend yes, {}, def
             visit def, fillrefs, (filled) ->
               return callback err if err?
-              console.log filled
               getref = exe.build filled
               getref (err, value) ->
                 return callback err if err?

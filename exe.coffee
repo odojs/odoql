@@ -1,13 +1,14 @@
-builtin =
-  findandreplace: require './exe/findandreplace'
-  one: require './exe/one'
-  oneornone: require './exe/oneornone'
-  shape: require './exe/shape'
-  pluck: require './exe/pluck'
-  remove: require './exe/remove'
-  filter: require './exe/filter'
-  translate: require './exe/translate'
-  count: require './exe/count'
+builtinsources = [
+  require './ops/boolean'
+  require './ops/conditional'
+  require './ops/maths'
+  require './ops/transform'
+]
+builtin = {}
+for opssource in builtinsources
+  for _, optype of opssource
+    for name, fn of optype
+      builtin[name] = fn
 
 exe = (def) ->
   providers = {}

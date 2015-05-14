@@ -1,13 +1,12 @@
-library = require './providers'
-ops = require './ops'
+library = require './library'
 
 ql = (query, def) ->
   res =
     query: -> query
-    fresh: ->
-      query.__f = yes
-      res
-    clone: -> ql query, def
+    clone: (deep) ->
+      return ql query, def unless deep
+      newquery = JSON.parse JSON.stringify query
+      ql newquery, def
   for source in def
     for name, _ of source.params
       do (name) ->
@@ -82,14 +81,9 @@ ql.use = (def) ->
     res
   res
   # attach methods against ql directly
-  res.use source for source in ops
+  res.use library.builtin
   res.use def
 
-for def in ops
-  applyglobals ql, def
-
-ql.diff = require './ql/diff'
-ql.build = require './ql/build'
-ql.exec = require './ql/exec'
+applyglobals ql, library.builtin
 
 module.exports = ql

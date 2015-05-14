@@ -2,7 +2,7 @@
   "name": "odoql",
   "version": "7.0.1",
   "description": "Odo query language",
-  "main": "ql.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,6 +11,7 @@
     "url": "https://github.com/odojs/odoql.git"
   },
   "keywords": [
+    "odoql",
     "graph",
     "query"
   ],
@@ -21,8 +22,5 @@
   },
   "homepage": "https://github.com/odojs/odoql",
   "dependencies": {
-    "extend": "^2.0.0",
-    "jsondiffpatch": "^0.1.31",
-    "odoql-utils": "1.*"
   }
 }

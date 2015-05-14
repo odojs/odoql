@@ -82,16 +82,19 @@ for _, def of builtin
     for provider, _ of providers
       result.builtin[type][provider] = yes
 
-
+# odoql-csv
 result.csv =
   params:
     csv: yes
+# odoql-fs
 result.fs =
   params:
     file: yes
+# odoql-http
 result.http =
   params:
     http: yes
+# odoql-time
 result.time =
   unary:
     asTime: yes
@@ -100,4 +103,3 @@ result.time =
     deltaTime: yes
 
 module.exports = result
-

@@ -3,7 +3,7 @@ var isquery, literal, ops;
 
 ops = require('./ops');
 
-isquery = require('./isquery');
+isquery = require('odoql-utils/isquery');
 
 literal = function(exe, value) {
   return function(cb) {
@@ -25,7 +25,14 @@ module.exports = {
         };
       },
       use: function(def) {
-        var _, fn, name, optype;
+        var _, d, fn, i, len, name, optype;
+        if (def instanceof Array) {
+          for (i = 0, len = def.length; i < len; i++) {
+            d = def[i];
+            res.use(def);
+          }
+          return res;
+        }
         for (_ in def) {
           optype = def[_];
           for (name in optype) {

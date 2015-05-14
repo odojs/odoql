@@ -1,4 +1,4 @@
-split = require './split'
+#split = require './split'
 
 module.exports = (query, stores) ->
   queries = {}

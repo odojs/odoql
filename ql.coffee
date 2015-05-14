@@ -1,3 +1,4 @@
+library = require './providers'
 ops = require './ops'
 
 ql = (query, def) ->
@@ -69,6 +70,13 @@ ql.use = (def) ->
     res[name] = fn
   res.providers = []
   res.use = (def) ->
+    if typeof(def) is 'string'
+      if !library[def]?
+        throw new Error "#{def} not found in library"
+      def = library[def]
+    if def instanceof Array
+      res.use d for d in def
+      return res
     applyglobals res, def
     res.providers.push def
     res
@@ -80,9 +88,6 @@ ql.use = (def) ->
 for def in ops
   applyglobals ql, def
 
-ql.desc = require './ql/desc'
-ql.merge = require './ql/merge'
-ql.split = require './ql/split'
 ql.diff = require './ql/diff'
 ql.build = require './ql/build'
 ql.exec = require './ql/exec'

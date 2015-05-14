@@ -1,4 +1,4 @@
-extend = require 'extend'
+extend = require 'odoql-utils/extend'
 async = require 'odoql-utils/async'
 visit = require 'odoql-utils/visit'
 

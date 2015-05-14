@@ -1,6 +1,6 @@
 ops = require './ops'
 
-isquery = require './isquery'
+isquery = require 'odoql-utils/isquery'
 
 literal = (exe, value) -> (cb) -> cb null, value
 
@@ -12,6 +12,9 @@ module.exports =
       clear: ->
         providers = literal: literal
       use: (def) ->
+        if def instanceof Array
+          res.use def for d in def
+          return res
         for _, optype of def
           for name, fn of optype
             providers[name] = fn

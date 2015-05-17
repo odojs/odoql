@@ -1,6 +1,6 @@
 {
   "name": "odoql",
-  "version": "7.0.1",
+  "version": "7.1.0",
   "description": "Odo query language",
   "main": "index.js",
   "scripts": {
@@ -21,6 +21,5 @@
     "url": "https://github.com/odojs/odoql/issues"
   },
   "homepage": "https://github.com/odojs/odoql",
-  "dependencies": {
-  }
+  "dependencies": {}
 }

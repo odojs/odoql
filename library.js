@@ -145,4 +145,16 @@ result.time = {
   }
 };
 
+result.json = {
+  unary: {
+    json: true
+  }
+};
+
+result.localstorage = {
+  unary: {
+    localstorage: true
+  }
+};
+
 module.exports = result;

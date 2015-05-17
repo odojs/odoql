@@ -101,5 +101,13 @@ result.time =
   params:
     formatTime: yes
     deltaTime: yes
+# odoql-json
+result.json =
+  unary:
+    json: yes
+# odoql-localstorage
+result.localstorage =
+  unary:
+    localstorage: yes
 
 module.exports = result

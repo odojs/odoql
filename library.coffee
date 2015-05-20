@@ -53,6 +53,7 @@ builtin =
   strings:
     params:
       findandreplace: yes
+      template: yes
     unary:
       uppercase: yes
       lowercase: yes

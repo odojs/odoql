@@ -9,7 +9,7 @@
   "author": "Thomas Coats",
   "license": "MIT",
   "dependencies": {
-    "odoql": "^7.2.0",
+    "odoql": "^7.2.1",
     "odoql-csv": "^0.1.0",
     "odoql-exe": "^1.0.2",
     "odoql-fs": "^0.2.0",

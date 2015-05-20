@@ -4,7 +4,7 @@ OdoQL is an extendible, composable and modular JSON query language.
 
 This module (odoql) can build JSON queries with no additional dependencies. Use odoql-exe and other providers to execute queries. Or build additional execution environments in languages other than javascript.
 
-- [OdoQL Examples](https://github.com/odojs/odoql-examples) contain some good examples of the OdoQL syntax.
+- [OdoQL Examples](https://github.com/odojs/odoql/tree/master/examples) contain some good examples of the OdoQL syntax.
 - [Odo.js Handbook](https://github.com/odojs/odojs-handbook) is a good example of how OdoQL can be used in a web framework.
 
 

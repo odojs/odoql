@@ -157,4 +157,10 @@ result.localstorage = {
   }
 };
 
+result.store = {
+  params: {
+    store: true
+  }
+};
+
 module.exports = result;

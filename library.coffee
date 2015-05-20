@@ -109,5 +109,9 @@ result.json =
 result.localstorage =
   unary:
     localstorage: yes
+# odoql-store
+result.store =
+  params:
+    store: yes
 
 module.exports = result

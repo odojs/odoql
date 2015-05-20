@@ -1,0 +1,20 @@
+{
+  "name": "odoql-examples",
+  "version": "1.1.0",
+  "description": "Examples of how to use OdoQL",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thomas Coats",
+  "license": "MIT",
+  "dependencies": {
+    "odoql": "^7.2.0",
+    "odoql-csv": "^0.1.0",
+    "odoql-exe": "^1.0.2",
+    "odoql-fs": "^0.2.0",
+    "odoql-http": "^0.2.0",
+    "odoql-store": "^0.1.0",
+    "odoql-time": "^0.1.0"
+  }
+}

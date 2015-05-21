@@ -31,9 +31,13 @@ ql = (query, def) ->
   res
 
 ql.params = (name, params, source) ->
-  __q: name
-  __p: params
-  __s: source
+  res =
+    __q: name
+    __p: params
+    __s: source
+  if !res.__p?
+    delete res.__p
+  res
 ql.unary = (name, source) ->
   __q: name
   __s: source

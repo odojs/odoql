@@ -89,12 +89,12 @@ builtin = {
       pluck: true,
       remove: true,
       shape: true,
-      rename: true
+      rename: true,
+      options: true
     },
     unary: {
       ref: true,
       count: true,
-      nocache: true,
       one: true,
       oneornone: true
     }

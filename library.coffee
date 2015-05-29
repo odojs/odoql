@@ -68,10 +68,10 @@ builtin =
       remove: yes
       shape: yes
       rename: yes
+      options: yes
     unary:
       ref: yes
       count: yes
-      nocache: yes
       one: yes
       oneornone: yes
   types:

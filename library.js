@@ -11,6 +11,11 @@ result = {
 };
 
 builtin = {
+  exe: {
+    unary: {
+      literal: true
+    }
+  },
   assign: {
     params: {
       assign: true

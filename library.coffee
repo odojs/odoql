@@ -6,6 +6,9 @@ result =
     trinary: {}
 
 builtin =
+  exe:
+    unary:
+      literal: yes
   assign:
     params:
       assign: yes

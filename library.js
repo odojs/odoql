@@ -146,6 +146,7 @@ result.time = {
     asTime: true
   },
   params: {
+    parseTime: true,
     formatTime: true,
     deltaTime: true
   }
@@ -154,6 +155,12 @@ result.time = {
 result.json = {
   unary: {
     json: true
+  }
+};
+
+result.yaml = {
+  unary: {
+    yaml: true
   }
 };
 

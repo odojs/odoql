@@ -103,12 +103,17 @@ result.time =
   unary:
     asTime: yes
   params:
+    parseTime: yes
     formatTime: yes
     deltaTime: yes
 # odoql-json
 result.json =
   unary:
     json: yes
+# odoql-yaml
+result.yaml =
+  unary:
+    yaml: yes
 # odoql-localstorage
 result.localstorage =
   unary:

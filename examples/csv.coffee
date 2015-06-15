@@ -1,14 +1,22 @@
 ql = require 'odoql'
 ql = ql
   .use 'csv'
-  .use 'http'
+  .use 'time'
+  .use 'fs'
 
-query = ql 'http://samplecsvs.s3.amazonaws.com/Sacramentorealestatetransactions.csv'
-  .http()
+query = ql './example2.csv'
+  .file()
   .csv
     header: yes
     skipEmptyLines: yes
-  .count()
+  .remove __parsed_extra: yes
+  .rename
+    time: 'DateTime'
+    location: 'Location'
+    wd: 'WindDir'
+    wsp: 'WSpd10m'
+    gst: 'Gust10m'
+  .filter ql.eq 'Location 1', ql.ref 'location'
   .query()
 
 console.log JSON.stringify query, null, 2
@@ -16,8 +24,8 @@ console.log JSON.stringify query, null, 2
 exe = require 'odoql-exe'
 exe = exe()
   .use require 'odoql-csv'
-  .use require 'odoql-http'
+  .use require 'odoql-fs'
+  .use require 'odoql-time'
 
-run = exe.build query
-run (err, results) ->
+exe.build(query) (err, results) ->
   console.log results

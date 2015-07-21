@@ -1,6 +1,7 @@
 library = require './library'
 
 ql = (query, def) ->
+  return ql.use() if arguments.length is 0
   res =
     query: -> query
     clone: (deep) ->
@@ -80,8 +81,9 @@ ql.use = (def) ->
     if def instanceof Array
       res.use d for d in def
       return res
-    applyglobals res, def
-    res.providers.push def
+    if def?
+      applyglobals res, def
+      res.providers.push def
     res
   res
   # attach methods against ql directly

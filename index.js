@@ -5,6 +5,9 @@ library = require('./library');
 
 ql = function(query, def) {
   var _, fn1, fn2, fn3, fn4, i, len, name, ref, ref1, ref2, ref3, res, source;
+  if (arguments.length === 0) {
+    return ql.use();
+  }
   res = {
     query: function() {
       return query;
@@ -175,8 +178,10 @@ ql.use = function(def) {
       }
       return res;
     }
-    applyglobals(res, def);
-    res.providers.push(def);
+    if (def != null) {
+      applyglobals(res, def);
+      res.providers.push(def);
+    }
     return res;
   };
   res;

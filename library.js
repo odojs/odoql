@@ -41,6 +41,14 @@ builtin = {
       unless: true
     }
   },
+  fill: {
+    params: {
+      fill: true
+    },
+    unary: {
+      param: true
+    }
+  },
   filter: {
     params: {
       filter: true

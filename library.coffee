@@ -27,6 +27,11 @@ builtin =
     trinary:
       if: yes
       unless: yes
+  fill:
+    params:
+      fill: yes
+    unary:
+      param: yes
   filter:
     params:
       filter: yes

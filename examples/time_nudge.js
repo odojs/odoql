@@ -79,7 +79,6 @@ query = ql([
 }).query()).time_nudge({
   lookback: '-3h',
   range: '+5h',
-  values: ['value'],
   target: 'delta',
   key: 'value',
   data: ql(obs).assign({

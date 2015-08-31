@@ -78,6 +78,9 @@ builtin = {
       sin: true,
       sqrt: true,
       tan: true
+    },
+    params: {
+      interpolate_linear: true
     }
   },
   strings: {

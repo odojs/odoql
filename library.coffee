@@ -58,6 +58,8 @@ builtin =
       sin: yes
       sqrt: yes
       tan: yes
+    params:
+      interpolate_linear: yes
   strings:
     params:
       findandreplace: yes

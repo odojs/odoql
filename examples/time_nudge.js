@@ -80,6 +80,8 @@ query = ql([
   lookback: '-3h',
   range: '+5h',
   values: ['value'],
+  target: 'delta',
+  key: 'value',
   data: ql(obs).assign({
     time: ql.time('YYYY-MM-DD[T]HH:mm:ssZ', ql.ref('time'))
   }).query()

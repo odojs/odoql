@@ -86,6 +86,10 @@ builtin =
     unary:
       asInt: yes
       asFloat: yes
+  json:
+    unary:
+      json: yes
+
 for _, def of builtin
   for type, providers of def
     for provider, _ of providers
@@ -106,11 +110,13 @@ result.http =
 # odoql-time
 result.time =
   unary:
-    asTime: yes
+    time_coerce: yes
   params:
-    parseTime: yes
-    formatTime: yes
-    deltaTime: yes
+    time: yes
+    time_format: yes
+    time_delta: yes
+    time_fill: yes
+    time_nudge: yes
 # odoql-json
 result.json =
   unary:

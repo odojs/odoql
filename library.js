@@ -117,6 +117,11 @@ builtin = {
       asInt: true,
       asFloat: true
     }
+  },
+  json: {
+    unary: {
+      json: true
+    }
   }
 };
 
@@ -151,12 +156,14 @@ result.http = {
 
 result.time = {
   unary: {
-    asTime: true
+    time_coerce: true
   },
   params: {
-    parseTime: true,
-    formatTime: true,
-    deltaTime: true
+    time: true,
+    time_format: true,
+    time_delta: true,
+    time_fill: true,
+    time_nudge: true
   }
 };
 

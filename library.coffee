@@ -60,6 +60,10 @@ builtin =
       tan: yes
     params:
       interpolate_linear: yes
+      toFixed: yes
+      round10: yes
+      floor10: yes
+      ceil10: yes
   strings:
     params:
       findandreplace: yes
@@ -115,6 +119,7 @@ result.time =
     time_coerce: yes
   params:
     time: yes
+    time_utc: yes
     time_format: yes
     time_delta: yes
     time_fill: yes

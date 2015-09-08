@@ -80,7 +80,11 @@ builtin = {
       tan: true
     },
     params: {
-      interpolate_linear: true
+      interpolate_linear: true,
+      toFixed: true,
+      round10: true,
+      floor10: true,
+      ceil10: true
     }
   },
   strings: {
@@ -163,6 +167,7 @@ result.time = {
   },
   params: {
     time: true,
+    time_utc: true,
     time_format: true,
     time_delta: true,
     time_fill: true,
